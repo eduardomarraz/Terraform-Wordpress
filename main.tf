@@ -369,23 +369,17 @@ resource "aws_secretsmanager_secret_version" "db" {
 }
 
 resource "aws_db_instance" "wp_mysql" {
-  identifier = "${var.namespace}-db"
-
-  allocated_storage      = 20
-  engine                 = local.rds.engine
-  engine_version         = local.rds.engine_version
-  instance_class         = local.rds.instance_class
-  db_name                = local.rds.db_name
-  username               = local.rds.username
-  password               = aws_secretsmanager_secret_version.db.secret_string
-  db_subnet_group_name   = aws_db_subnet_group.mission_db_group.name
+  allocated_storage    = 10
+  db_name              = "mydb"
+  engine               = "mysql"
+  engine_version       = "8.0"
+  instance_class       = "db.t3.micro"
+  username             = "foo"
+  password             = "foobarbaz"
+  parameter_group_name = "default.mysql8.0"
+  skip_final_snapshot  = true
+    db_subnet_group_name   = aws_db_subnet_group.mission_db_group.name
   vpc_security_group_ids = [aws_security_group.db.id]
-  multi_az               = true
-  skip_final_snapshot    = true
-
-  tags = {
-    Name = "${var.namespace}-db"
-  }
 }
 
 #EFS Editado----------------------------------------------------------------------------
@@ -480,7 +474,7 @@ resource "aws_lb" "mission_app" {
 
 # Launch configuration
 resource "aws_launch_template" "mission_app_lc" {
-  name_prefix = "${var.namespace}-mission_app_iac_lc-"
+
   image_id    = aws_ami_copy.mission_app_ami.id
 
   instance_requirements {
