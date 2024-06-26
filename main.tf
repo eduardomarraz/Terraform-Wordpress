@@ -369,17 +369,15 @@ resource "aws_secretsmanager_secret_version" "db" {
 }
 
 resource "aws_db_instance" "wp_mysql" {
-  allocated_storage    = 10
-  db_name              = "mydb"
+  identifier           = "terraform-workshop-db"
+  allocated_storage    = 20
   engine               = "mysql"
-  engine_version       = "8.0"
-  instance_class       = "db.t3.micro"
-  username             = "foo"
-  password             = "foobarbaz"
-  parameter_group_name = "default.mysql8.0"
+  engine_version       = "5.7"
+  instance_class       = "db.t3.small"
+  username             = "admin"
+  password             = "mypassword"
+  parameter_group_name = "default.mysql5.7"
   skip_final_snapshot  = true
-    db_subnet_group_name   = aws_db_subnet_group.mission_db_group.name
-  vpc_security_group_ids = [aws_security_group.db.id]
 }
 
 #EFS Editado----------------------------------------------------------------------------
@@ -416,7 +414,7 @@ resource "aws_instance" "staging_app" {
     demo_email    = local.demo.admin.email
   })
 
-  iam_instance_profile   = "LabRole"     #aws_iam_instance_profile.app.name
+  iam_instance_profile   = "LabInstanceProfile"     #aws_iam_instance_profile.app.name
   availability_zone      = data.aws_availability_zones.available.names[0]
   vpc_security_group_ids = [aws_security_group.app.id]
 
